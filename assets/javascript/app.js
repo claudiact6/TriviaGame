@@ -15,7 +15,7 @@ var trivia = {
         "answers5": ["The defense lawyer", "The loving mother", "The concerned teacher", "The nosy neighbor"],
         "answers6": ["Darby", "Darcy", "Darlene", "Darling"],
     },
-    "rightAnswers": ["", "Chromium", "1991"],
+    "rightAnswers": ["", "Chromium", "1991", "Nebuchadnezzar", "Jenny Curran", "The defense lawyer", "Darby"],
     "pictures": {
         "picture1": "../images/picture1.jpg",
         "picture2": "../images/picture2.jpg",
@@ -30,6 +30,18 @@ var count = 0;
 var originalanswers = [];
 var time = 15;
 var shuffledanswers = [];
+var countDown = setInterval(function () {
+    time--;
+    $("#timer").html(time);
+    console.log($("#timer").html());
+    if (time === 0) {
+        clearInterval(countDown);
+    }
+    $("ul").on("click", "li", function () {
+        time = 1;
+        console.log("clicked, time is " + time);
+    });
+}, 1000);
 
 function shuffle(a) {
     var j, x, i;
@@ -42,16 +54,24 @@ function shuffle(a) {
     return a;
 }
 
+function timer() {
+
+}
+
 function noAnswer() {
     clear();
+    answer();
     $("#rightWrong").html("Time's up!");
     $("#explain").html("You didn't answer!");
     setTimeout(nextQuestion, 5000);
 }
 
 function showRight() {
+    console.log("right 2");
     clear();
+    answer();
     $("#rightWrong").html("That's right!");
+    console.log( $("#rightWrong").text());
     $("#picture").html("<img src='assets/images/picture" + count + ".jpg' />");
     setTimeout(nextQuestion, 5000);
 
@@ -59,31 +79,35 @@ function showRight() {
 
 function showWrong() {
     clear();
+    answer();
     $("#rightWrong").html("Wrong!");
     $("#explain").html("The right answer was " + trivia.rightAnswers[count] + ".");
     $("#picture").html("<img src='assets/images/picture" + count + ".jpg' />");
     setTimeout(nextQuestion, 5000);
 }
 
-function timer() {
-    time--;
-    $("#timer").html(time);
-}
 
 function clear() {
     clearTimeout(noAnswer);
-    clearInterval(timer); 
-    shuffledanswers.length = 0;
+    console.log("cleared");
+    console.log(countDown);
+    time = 15;
+
+}
+
+function answer() {
     $("#question").hide();
     $("#answers").html("");
-    $("#answers").hide();
     $("#timecontain").hide();
-    console.log("cleared");
-    console.log(shuffledanswers);
+    $("#picture").show();
+    $("#explain").show();
+    $("#rightWrong").show();
+    shuffledanswers.length = 0;
 }
 
 function nextQuestion() {
-    console.log(shuffledanswers);
+    clear();
+    clearTimeout(nextQuestion);
     count++;
     $("#picture").hide();
     $("#explain").hide();
@@ -93,41 +117,43 @@ function nextQuestion() {
     $("#timecontain").show();
     $("#progress").show();
     $("#question").html(trivia.questions["question" + count]);
+    timer();
     var shuffledanswers = shuffle(trivia.answers["answers" + count]);
     for (i = 0; i < 4; i++) {
         $("#answers").append("<li class='list-group-item' id=" + i + ">" + shuffledanswers[i] + "</li>");
     }
     setTimeout(noAnswer, 15000);
-    setInterval(timer, 1000);
 }
 
 
 $(document).ready(function () {
     count = 1;
     $("#start").on("click", function () {
+        time = 15;
         $(this).hide();
         $("#subtitle").hide();
         $("#timecontain").show();
         $("#progress").show();
         $("#question").html(trivia.questions["question" + count]);
         var shuffledanswers = shuffle(trivia.answers["answers" + count]);
+        timer();
         for (i = 0; i < 4; i++) {
             $("#answers").append("<li class='list-group-item' id=" + i + ">" + shuffledanswers[i] + "</li>");
         }
         setTimeout(noAnswer, 15000);
-        setInterval(timer, 1000);
 
     });
 
 
 
     $("ul").on("click", "li", function () {
-        clearTimeout(noAnswer);
-        clearInterval(timer);
+        clear();
         $("#timecontain").hide();
         console.log(originalanswers);
         console.log($(this).text());
+        console.log(trivia.rightAnswers[count]);
         if ($(this).text() === trivia.rightAnswers[count]) {
+            console.log("right");
             showRight();
         } else {
             showWrong();
