@@ -43,6 +43,10 @@ var countDown = setInterval(function () {
     });
 }, 1000);
 
+var right = 0;
+var nextQ;
+var noA;
+
 function shuffle(a) {
     var j, x, i;
     for (i = a.length - 1; i > 0; i--) {
@@ -63,17 +67,19 @@ function noAnswer() {
     answer();
     $("#rightWrong").html("Time's up!");
     $("#explain").html("You didn't answer!");
-    setTimeout(nextQuestion, 5000);
+    nextQ = setTimeout(nextQuestion, 5000);
 }
 
 function showRight() {
+    right++;
     console.log("right 2");
     clear();
     answer();
+    $("#explain").hide();
     $("#rightWrong").html("That's right!");
-    console.log( $("#rightWrong").text());
+    console.log($("#rightWrong").text());
     $("#picture").html("<img src='assets/images/picture" + count + ".jpg' />");
-    setTimeout(nextQuestion, 5000);
+    nextQ = setTimeout(nextQuestion, 5000);
 
 }
 
@@ -83,12 +89,12 @@ function showWrong() {
     $("#rightWrong").html("Wrong!");
     $("#explain").html("The right answer was " + trivia.rightAnswers[count] + ".");
     $("#picture").html("<img src='assets/images/picture" + count + ".jpg' />");
-    setTimeout(nextQuestion, 5000);
+    nextQ = setTimeout(nextQuestion, 5000);
 }
 
 
 function clear() {
-    clearTimeout(noAnswer);
+    clearTimeout(noA);
     console.log("cleared");
     console.log(countDown);
     time = 15;
@@ -107,22 +113,37 @@ function answer() {
 
 function nextQuestion() {
     clear();
-    clearTimeout(nextQuestion);
+    clearTimeout(nextQ);
     count++;
+    if (count <= Object.keys(trivia.questions).length) {
+        $("#progress").attr("aria-valuenow", count/Object.keys(trivia.questions).length);
+        $("#picture").hide();
+        $("#explain").hide();
+        $("#rightWrong").hide();
+        $("#question").show();
+        $("#answers").show();
+        $("#timecontain").show();
+        $("#progress").show();
+        $("#question").html(trivia.questions["question" + count]);
+        timer();
+        var shuffledanswers = shuffle(trivia.answers["answers" + count]);
+        for (i = 0; i < 4; i++) {
+            $("#answers").append("<li class='list-group-item' id=" + i + ">" + shuffledanswers[i] + "</li>");
+        }
+        noA = setTimeout(noAnswer, 15000);
+    } else {
+        gameover();
+    }
+}
+
+function gameover() {
     $("#picture").hide();
     $("#explain").hide();
     $("#rightWrong").hide();
-    $("#question").show();
-    $("#answers").show();
-    $("#timecontain").show();
-    $("#progress").show();
-    $("#question").html(trivia.questions["question" + count]);
-    timer();
-    var shuffledanswers = shuffle(trivia.answers["answers" + count]);
-    for (i = 0; i < 4; i++) {
-        $("#answers").append("<li class='list-group-item' id=" + i + ">" + shuffledanswers[i] + "</li>");
-    }
-    setTimeout(noAnswer, 15000);
+    $("#subtitle").show();
+    $("#subtitle").text("Game over!")
+    $("#rightAnswers").text("You answered " + right + " of " + Object.keys(trivia.questions).length + " questions correctly!");
+
 }
 
 
@@ -140,7 +161,7 @@ $(document).ready(function () {
         for (i = 0; i < 4; i++) {
             $("#answers").append("<li class='list-group-item' id=" + i + ">" + shuffledanswers[i] + "</li>");
         }
-        setTimeout(noAnswer, 15000);
+        noA = setTimeout(noAnswer, 15000);
 
     });
 
@@ -149,9 +170,6 @@ $(document).ready(function () {
     $("ul").on("click", "li", function () {
         clear();
         $("#timecontain").hide();
-        console.log(originalanswers);
-        console.log($(this).text());
-        console.log(trivia.rightAnswers[count]);
         if ($(this).text() === trivia.rightAnswers[count]) {
             console.log("right");
             showRight();
