@@ -39,7 +39,6 @@ var countDown = setInterval(function () {
     }
     $("ul").on("click", "li", function () {
         time = 1;
-        console.log("clicked, time is " + time);
     });
 }, 1000);
 
@@ -58,10 +57,6 @@ function shuffle(a) {
     return a;
 }
 
-function timer() {
-
-}
-
 function noAnswer() {
     clear();
     answer();
@@ -72,12 +67,10 @@ function noAnswer() {
 
 function showRight() {
     right++;
-    console.log("right 2");
     clear();
     answer();
     $("#explain").hide();
     $("#rightWrong").html("That's right!");
-    console.log($("#rightWrong").text());
     $("#picture").html("<img src='assets/images/picture" + count + ".jpg' />");
     nextQ = setTimeout(nextQuestion, 5000);
 
@@ -96,9 +89,6 @@ function showWrong() {
 function clear() {
     clearTimeout(noA);
     console.log("cleared");
-    console.log(countDown);
-    time = 15;
-
 }
 
 function answer() {
@@ -116,6 +106,19 @@ function nextQuestion() {
     clearTimeout(nextQ);
     count++;
     if (count <= Object.keys(trivia.questions).length) {
+        time = 15;
+        var countDown = setInterval(function () {
+            time--;
+            $("#timer").html(time);
+            console.log($("#timer").html());
+            if (time === 0) {
+                clearInterval(countDown);
+            }
+            $("ul").on("click", "li", function () {
+                time = 1;
+            });
+        }, 1000);
+        console.log("in newQuestion, time is " + time);
         $("#progress").attr("aria-valuenow", count/Object.keys(trivia.questions).length);
         $("#picture").hide();
         $("#explain").hide();
@@ -125,7 +128,6 @@ function nextQuestion() {
         $("#timecontain").show();
         $("#progress").show();
         $("#question").html(trivia.questions["question" + count]);
-        timer();
         var shuffledanswers = shuffle(trivia.answers["answers" + count]);
         for (i = 0; i < 4; i++) {
             $("#answers").append("<li class='list-group-item' id=" + i + ">" + shuffledanswers[i] + "</li>");
@@ -157,7 +159,6 @@ $(document).ready(function () {
         $("#progress").show();
         $("#question").html(trivia.questions["question" + count]);
         var shuffledanswers = shuffle(trivia.answers["answers" + count]);
-        timer();
         for (i = 0; i < 4; i++) {
             $("#answers").append("<li class='list-group-item' id=" + i + ">" + shuffledanswers[i] + "</li>");
         }
@@ -171,7 +172,6 @@ $(document).ready(function () {
         clear();
         $("#timecontain").hide();
         if ($(this).text() === trivia.rightAnswers[count]) {
-            console.log("right");
             showRight();
         } else {
             showWrong();
