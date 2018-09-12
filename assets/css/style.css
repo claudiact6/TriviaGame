@@ -17,6 +17,10 @@ h1,h2,h3,h4,h5,h6 {
     background-color: #9196E3;
 }
 
+#subtitle {
+    color:#FF69B4;
+}
+
 #timecontain {
     display: none;
 }
@@ -25,6 +29,7 @@ h1,h2,h3,h4,h5,h6 {
     max-height: 200px;
 }
 
-#progress {
-    display: none;
-} 
+
+.progress-bar {
+    background-color: #FF69B4;
+}

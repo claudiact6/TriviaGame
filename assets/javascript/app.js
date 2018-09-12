@@ -62,6 +62,7 @@ function noAnswer() {
     answer();
     $("#rightWrong").html("Time's up!");
     $("#explain").html("You didn't answer!");
+    $("#picture").html("<img src='assets/images/picture" + count + ".jpg' />");
     nextQ = setTimeout(nextQuestion, 5000);
 }
 
@@ -98,6 +99,10 @@ function answer() {
     $("#picture").show();
     $("#explain").show();
     $("#rightWrong").show();
+    $("#progressdiv").css("class","d-flex");
+    console.log("progress div class" + progressdiv.css);
+    $(".progress-bar").attr("aria-valuenow", (count/Object.keys(trivia.questions).length)*100);
+    $(".progress-bar").css("width", (count/Object.keys(trivia.questions).length)*100 + "%");
     shuffledanswers.length = 0;
 }
 
@@ -119,14 +124,13 @@ function nextQuestion() {
             });
         }, 1000);
         console.log("in newQuestion, time is " + time);
-        $("#progress").attr("aria-valuenow", count/Object.keys(trivia.questions).length);
+        $("#progressdiv").css("class","d-none");
         $("#picture").hide();
         $("#explain").hide();
         $("#rightWrong").hide();
         $("#question").show();
         $("#answers").show();
         $("#timecontain").show();
-        $("#progress").show();
         $("#question").html(trivia.questions["question" + count]);
         var shuffledanswers = shuffle(trivia.answers["answers" + count]);
         for (i = 0; i < 4; i++) {
@@ -143,20 +147,20 @@ function gameover() {
     $("#explain").hide();
     $("#rightWrong").hide();
     $("#subtitle").show();
-    $("#subtitle").text("Game over!")
+    $("#subtitle").text("Game over!");
     $("#rightAnswers").text("You answered " + right + " of " + Object.keys(trivia.questions).length + " questions correctly!");
 
 }
 
 
 $(document).ready(function () {
+    $("#progressdiv").css("class","d-none");
     count = 1;
     $("#start").on("click", function () {
         time = 15;
         $(this).hide();
         $("#subtitle").hide();
         $("#timecontain").show();
-        $("#progress").show();
         $("#question").html(trivia.questions["question" + count]);
         var shuffledanswers = shuffle(trivia.answers["answers" + count]);
         for (i = 0; i < 4; i++) {
